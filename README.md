@@ -95,6 +95,14 @@ fork()
 | `cut -d',' -f1` | Cuts a column from delimited text |
 | `rev` | Reverses each line |
 
+
+```shell
+< file1 grep "hello" | wc -l > file2
+< file1 cat | grep "error" > file2
+< file1 sort | uniq > file2
+< file1 head -n 10 | tr 'a-z' 'A-Z' > file2
+```
+
 ## Instructions
 
 ## Resources
