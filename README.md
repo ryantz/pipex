@@ -103,6 +103,18 @@ fork()
 < file1 head -n 10 | tr 'a-z' 'A-Z' > file2
 ```
 
+default behavior: cmd1 -> write to its stdout
+pipe: point cmd1's stdout to the write end of pipe
+default behaviour: cmd2 expects input into its stdin
+pipe: point the read end of pipe into cmd2's stdin
+cmd 1 -> pipe -> cmd2
+
+## Design of the program
+
+Firstly, for pipe to be used, two file descriptors have to be created. 
+pipefd[0] which is the write end of the pipe and pipefd[1] which is the read
+end of the pipe.
+
 ## Instructions
 
 ## Resources

@@ -20,6 +20,7 @@ SRC_DIR = src
 
 SRC = $(SRC_DIR)/main.c \
 	  $(SRC_DIR)/error_handling.c \
+	  $(SRC_DIR)/processes.c \
 
 # pattern substitution
 # $(patsubst WHAT_TO_MATCH,WHAT_TO_REPLACE_IT_WITH,WHERE_TO_LOOK)

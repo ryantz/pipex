@@ -6,43 +6,48 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 12:17:53 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/16 10:26:04 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/03/16 17:44:58 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int	main(int argc, char **argv)
+// ./pipex file1 cmd1 cmd2 file2
+int	main(int argc, char **argv, char **envp)
 {
-	// read and write fds thats why it is 2
-	int	pipefds[2];
-	char	*buffer;
-	char	*file1 = argv[1];
-	char	*file2 = argv[4];
-	char	*cmd1 = argv[2];
-	char	*cmd2 = argv[3];
+	int				pipefd[2];
+	int				fd_in;
+	int				fd_out;
+	char			*full_path;
+	t_commandpaths	*cp_struct;
 
-	printf("parent pid: %d\n", getpid());
 	if (argc < 5)
 	{
-		if (argc == 1)
-			print_error(0);
-		else
-			print_error(1);
+		print_error(1);
 		ft_printf("4 arguments needed, only %d recieved.\n", argc - 1);
 		return (EINVAL);
-	} 
-	ft_printf("file 1: %s, cmd 1: %s, cmd 2: %s, file 2: %s\n",
-			file1, cmd1, cmd2, file2);
-	pipe(pipefds);
-	write(pipefds[1], file1, ft_strlen(argv[1]));
-	// child runs from this line
-	if (fork() > 0)
-		return (1);
-	buffer = malloc(sizeof(char) * (ft_strlen(argv[1])));
-	read(pipefds[0], buffer, ft_strlen(argv[1]) + 1);
-	printf("got from pipe: %s\n", buffer);
-	printf("child pid: %d\n", getpid());
-	free(buffer);
+	}
+	fd_in = open(argv[1], O_RDONLY);
+	if (fd_in < 0)
+	{
+		perror(argv[1]);
+		exit(EXIT_FAILURE);
+	}
+	fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd_out < 0)
+	{
+		perror(argv[4]);
+		exit(EXIT_FAILURE);
+	}
+	pipe(pipefd);
+	full_path = get_path(envp);
+	cp_struct = get_cp_struct(argv, full_path, fd_in, fd_out);
+	fork_process(cp_struct, envp, pipefd, 1);
+	fork_process(cp_struct, envp, pipefd, 2);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	wait(NULL);
+	wait(NULL);
+	free(cp_struct);
 	return (0);
 }
