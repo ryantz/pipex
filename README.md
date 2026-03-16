@@ -2,8 +2,6 @@
 
 # PIPEX
 
-*This project has been created as part of the 42 curriculum by ryatan*
-
 ## Description
 
 This project focuses on handling pipes in the format equivalent to:
