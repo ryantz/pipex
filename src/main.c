@@ -6,7 +6,7 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 12:17:53 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/16 18:39:59 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/03/16 22:49:46 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,6 @@ int	main(int argc, char **argv, char **envp)
 	close(pipefd[1]);
 	wait(NULL);
 	wait(NULL);
-	free(cp_struct);
+	free_struct(cp_struct);
 	return (0);
 }

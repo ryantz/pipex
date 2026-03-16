@@ -6,7 +6,7 @@
 #    By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/09 08:56:45 by ryatan            #+#    #+#              #
-#    Updated: 2026/03/15 15:02:51 by ryatan           ###   ########.fr        #
+#    Updated: 2026/03/16 22:35:27 by ryatan           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ SRC_DIR = src
 SRC = $(SRC_DIR)/main.c \
 	  $(SRC_DIR)/error_handling.c \
 	  $(SRC_DIR)/processes.c \
+	  $(SRC_DIR)/helpers.c \
 
 # pattern substitution
 # $(patsubst WHAT_TO_MATCH,WHAT_TO_REPLACE_IT_WITH,WHERE_TO_LOOK)

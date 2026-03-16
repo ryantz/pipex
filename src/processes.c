@@ -6,7 +6,7 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 13:22:08 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/16 18:39:57 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/03/16 22:46:51 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ char	*get_path(char **envp)
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-			return (envp[i]);
+			return (envp[i] + 5);
 		i++;
 	}
 	print_error(0);
@@ -34,16 +34,22 @@ char	*get_command_path(char *full_path, char *command)
 {
 	char	**split_paths;
 	char	*path_join_command;
+	char	*tmp;
 	int		i;
 
 	split_paths = ft_split(full_path, ':');
 	i = 0;
 	while (split_paths[i])
 	{
-		path_join_command = ft_strjoin(split_paths[i], "/");
-		path_join_command = ft_strjoin(path_join_command, command);
-		if (access(path_join_command, F_OK) == 0)
+		tmp = ft_strjoin(split_paths[i], "/");
+		path_join_command = ft_strjoin(tmp, command);
+		free(tmp);
+		if (access(path_join_command, X_OK) == 0)
+		{
+			free_all(split_paths);
 			return (path_join_command);
+		}
+		free(path_join_command);
 		i++;
 	}
 	print_error(0);
@@ -69,6 +75,7 @@ t_commandpaths	*get_cp_struct(char **argv, char *full_path, t_filefds *fds)
 	cp_struct->cmd2 = cmd2;
 	cp_struct->fd_in = fds->fd_in;
 	cp_struct->fd_out = fds->fd_out;
+	free(fds);
 	return (cp_struct);
 }
 
