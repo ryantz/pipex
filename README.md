@@ -2,75 +2,76 @@
 
 # PIPEX
 
+*This project has been created as part of the 42 curriculum by ryatan*
+
 ## Description
 
 This project focuses on handling pipes in the format equivalent to:
- ```shell
+```shell
 < file1 cmd1 | cmd2 > file2
 ```
-Where:
-    file1 and file2 are filenames.
-    cmd1 and cmd2 are shell commands with their parameters.
 
-### Allowed functions to use and their descriptions
+Where `file1` and `file2` are filenames, and `cmd1` and `cmd2` are shell commands with their parameters.
 
-file operations: open, close, read
-printing: write
-memory: malloc, free
+---
 
-perror(): print a readable error message based on the current errno.
-          when a syscall fails, it sets a global var errno.
-          perror() prints a message that describes that error.
-          (used if syscall fork(), execve(), pipe() etc fails)
+## Allowed Functions
 
-strerror(): convert an error number into a human-readable string.a
-            unlike perror as it returns a strong not print it.
-            formatting own error messages
-            errno -> strerror(errno) -> "Permission denied"
+### File Operations
+| Function | Description |
+|----------|-------------|
+| `open()` | Open a file |
+| `close()` | Close a file descriptor |
+| `read()` | Read from a file descriptor |
+| `write()` | Write to a file descriptor |
 
-access(): check if files exists of permissions to use it. (before executing a
-          command check if it exists in path /usr/bin/
+### Memory
+| Function | Description |
+|----------|-------------|
+| `malloc()` | Allocate memory |
+| `free()` | Free allocated memory |
 
-dup(): duplicate a file descriptor. Both fd will refer to the same open file
+### Error Handling
+| Function | Description |
+|----------|-------------|
+| `perror()` | Prints a human-readable error message based on the current `errno`. Called when a syscall like `fork()`, `execve()`, or `pipe()` fails. |
+| `strerror()` | Converts an error number into a human-readable string. Unlike `perror()`, it returns a string rather than printing it — useful for formatting custom error messages (e.g. `errno` → `strerror(errno)` → `"Permission denied"`). |
 
-dup2(): duplicate file descriptor into a specific descriptor number (core for
-        redirection. dup2(pip_write, STDOUT) : stdout -> pipe : cmd1 | cmd2
+### Process Management
+| Function | Description |
+|----------|-------------|
+| `fork()` | Creates a new child process. After `fork()`, two identical processes exist. |
+| `execve()` | Replaces the current process with another program. Does not create a new process — used after `fork()` in the child. |
+| `exit()` | Terminates the current process. |
+| `wait()` | Pauses the parent process until any child finishes. Without it, finished children become zombie processes. |
+| `waitpid()` | Waits for a specific child process by PID. Offers more control than `wait()`, including non-blocking checks. |
+| `pipe()` | Creates a communication channel between processes. Returns two file descriptors: `fd[0]` (read end) and `fd[1]` (write end). |
+| `access()` | Checks if a file exists or if the process has permission to use it (e.g. verifying a command exists in `/usr/bin/`). |
 
-execve(): Replace the current process with another program. Does not create
-          a new process. fork() -> child: execve() -> becomes new program
+### File Descriptor Manipulation
+| Function | Description |
+|----------|-------------|
+| `dup()` | Duplicates a file descriptor. Both fds refer to the same open file. |
+| `dup2()` | Duplicates a file descriptor into a specific descriptor number — core to redirection (e.g. `dup2(pipe_write, STDOUT)` redirects stdout into the pipe). |
+| `unlink()` | Deletes a file from the filesystem (equivalent to `rm file.txt`). Used for cleanup. |
 
-exit(): terminates current process
+---
 
-fork(): process creation, creates new child. After fork(), will have 2 of the 
-        same processes.
+## Typical Command Execution Flow
+```c
+pipe()
+fork()
+    // Child process:
+    dup2()    // Redirect I/O
+    execve()  // Run the command
+    exit()    // If exec fails
 
-pipe(): create a communication channel between processes. Returns two fds.
-        fd[0] -> read, fd[1] -> write
-        processA -> pipe -> processB
-        processA | processB
+    // Parent process:
+    waitpid() // Wait for child to finish
+```
 
-unlink(): Delete a file from the filesystem. (rm file.txt)
-          used for cleanup
-
-wait(): Pause parent process until any child finishes. If not used child
-        child processes become zombie processes.
-        parent -> wait() -> child finishes
-
-waitpid(): wait for a specific child process. More control than wait().
-           pass the PID of the child you want to wait for. 
-           Allows non-blocking checks, waiting for specific children
-
-Typical command exec:
-
-        pipe()
-        fork()
-            child:
-                dup2() - redirection of IO
-                execve() - run command
-                exit() - if exec fails
-
-            parent:
-                waitpid()
+---
 
 ## Instructions
+
 ## Resources
