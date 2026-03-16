@@ -69,6 +69,31 @@ fork()
 ```
 
 ---
+## Useful Shell Commands for Testing
+
+### Simple Input/Output
+| Command | Description |
+|---------|-------------|
+| `cat` | Reads and prints file contents |
+| `echo` | Prints a string |
+| `ls` | Lists directory contents |
+| `wc -l` / `wc -w` | Counts lines / words |
+
+### Filtering & Searching
+| Command | Description |
+|---------|-------------|
+| `grep "pattern"` | Filters lines matching a pattern |
+| `head -n 5` | Prints the first 5 lines |
+| `tail -n 5` | Prints the last 5 lines |
+| `sort` | Sorts lines alphabetically |
+| `uniq` | Removes duplicate lines |
+
+### Transformation
+| Command | Description |
+|---------|-------------|
+| `tr 'a-z' 'A-Z'` | Transforms characters (e.g. lowercase to uppercase) |
+| `cut -d',' -f1` | Cuts a column from delimited text |
+| `rev` | Reverses each line |
 
 ## Instructions
 
