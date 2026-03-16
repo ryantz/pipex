@@ -6,7 +6,7 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 13:22:08 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/16 17:43:54 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/03/16 18:39:57 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 char	*get_path(char **envp)
 {
 	int	i;
+
 	i = 0;
 	while (envp[i])
 	{
@@ -49,8 +50,7 @@ char	*get_command_path(char *full_path, char *command)
 	return (NULL);
 }
 
-t_commandpaths	*get_cp_struct(char **argv, char *full_path, int fd_in,
-		int fd_out)
+t_commandpaths	*get_cp_struct(char **argv, char *full_path, t_filefds *fds)
 {
 	char			**cmd1;
 	char			**cmd2;
@@ -67,8 +67,8 @@ t_commandpaths	*get_cp_struct(char **argv, char *full_path, int fd_in,
 	cp_struct->cmd2_path = command2_path;
 	cp_struct->cmd1 = cmd1;
 	cp_struct->cmd2 = cmd2;
-	cp_struct->fd_in = fd_in;
-	cp_struct->fd_out = fd_out;
+	cp_struct->fd_in = fds->fd_in;
+	cp_struct->fd_out = fds->fd_out;
 	return (cp_struct);
 }
 
@@ -96,4 +96,24 @@ void	fork_process(t_commandpaths *cp_struct, char **envp, int *pipefd,
 		close(pipefd[0]);
 		execve(cp_struct->cmd2_path, cp_struct->cmd2, envp);
 	}
+}
+
+t_filefds	*open_create_files(char **argv)
+{
+	t_filefds	*file_fds;
+
+	file_fds = malloc(sizeof(t_filefds));
+	file_fds->fd_in = open(argv[1], O_RDONLY);
+	if (file_fds->fd_in < 0)
+	{
+		perror(argv[1]);
+		exit(EXIT_FAILURE);
+	}
+	file_fds->fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (file_fds->fd_out < 0)
+	{
+		perror(argv[4]);
+		exit(EXIT_FAILURE);
+	}
+	return (file_fds);
 }
