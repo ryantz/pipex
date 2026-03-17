@@ -111,10 +111,83 @@ cmd 1 -> pipe -> cmd2
 
 ## Design of the program
 
-Firstly, for pipe to be used, two file descriptors have to be created. 
-pipefd[0] which is the write end of the pipe and pipefd[1] which is the read
-end of the pipe.
-
+### Enums
+```c
+enum e_error
+{
+	ERR_NONE,
+	ERR_INVALID_INPUT,
+};
+```
+### Structures
+```c
+typedef struct s_commandpaths
+{
+	char	*cmd1_path;
+	char	*cmd2_path;
+	char	**cmd1;
+	char	**cmd2;
+	int		fd_in;
+	int		fd_out;
+}	t_commandpaths;
+```
+```c
+typedef struct s_filefds
+{
+	int	fd_in;
+	int	fd_out;
+}	t_filefds;
+```
+### Created functions
+#### Error handling
+```c
+void			print_error(int err_code);
+```
+#### Struct inits
+```c
+int				init_cp_struct(t_commandpaths **cp_struct);
+```
+```c
+int				init_filefds(t_filefds **file_fds);
+```
+#### File operations
+```c
+t_filefds		*open_create_files(char **argv);
+```
+#### Get functions
+```c
+char			*get_path(char **envp);
+```
+```c
+char			*get_command_path(char *full_path, char *command);
+```
+```c
+t_commandpaths	*get_cp_struct(char **argv, char *full_path, t_filefds *fds);
+```
+#### Pipex main logic
+```c
+void			fork_process(t_commandpaths *cp_struct, char **envp,
+					int *pipefd, int cmd);
+```
+#### Memory management
+```c
+int				free_all(char **item);
+```
+```c
+int				free_struct(t_commandpaths *cp_struct);
+```
 ## Instructions
 
+```c
+make
+```
+```bash
+< input_file cmd1 | cmd2 > output_file
+```
+```c
+./pipex input_file cmd1 cmd2 output_file
+```
 ## Resources
+Fork() system call tutorial: https://www.youtube.com/watch?v=xVSPv-9x3gk
+Pipe() tutorial for linux: https://www.youtube.com/watch?v=uHH7nHkgZ4w
+fd, dup()/dup2() system call tutorial: https://www.youtube.com/watch?v=EqndHT606Tw
