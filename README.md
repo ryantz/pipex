@@ -1,9 +1,6 @@
+*This project has been created as part of the 42 curriculum by ryatan
 # PIPEX
-
-> *Created as part of the 42 curriculum by ryatan*
-
 ## Description
-
 This project replicates the shell pipe behaviour:
 
 ```shell
