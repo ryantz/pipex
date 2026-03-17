@@ -6,7 +6,7 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 12:53:14 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/16 22:49:17 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/03/17 20:11:57 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,5 +56,7 @@ void			fork_process(t_commandpaths *cp_struct, char **envp,
 t_filefds		*open_create_files(char **argv);
 int				free_all(char **item);
 int				free_struct(t_commandpaths *cp_struct);
+int				init_cp_struct(t_commandpaths **cp_struct);
+int				init_filefds(t_filefds **file_fds);
 
 #endif

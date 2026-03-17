@@ -6,16 +6,38 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 22:29:54 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/16 22:49:59 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/03/17 20:19:34 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+int	init_filefds(t_filefds **file_fds)
+{
+	if (!*file_fds)
+		return (1);
+	(*file_fds)->fd_in = -1;
+	(*file_fds)->fd_out = -1;
+	return (0);
+}
+
+int	init_cp_struct(t_commandpaths **cp_struct)
+{
+	if (!*cp_struct)
+		return (1);
+	(*cp_struct)->cmd1_path = NULL;
+	(*cp_struct)->cmd2_path = NULL;
+	(*cp_struct)->cmd1 = NULL;
+	(*cp_struct)->cmd2 = NULL;
+	(*cp_struct)->fd_in = 0;
+	(*cp_struct)->fd_out = 0;
+	return (0);
+}
+
 int	free_all(char **item)
 {
 	int	i;
-	
+
 	if (!item)
 		return (1);
 	i = 0;
@@ -30,6 +52,8 @@ int	free_all(char **item)
 
 int	free_struct(t_commandpaths *cp_struct)
 {
+	if (!cp_struct)
+		return (1);
 	free(cp_struct->cmd1_path);
 	free(cp_struct->cmd2_path);
 	free_all(cp_struct->cmd1);

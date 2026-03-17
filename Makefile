@@ -6,14 +6,14 @@
 #    By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/02/09 08:56:45 by ryatan            #+#    #+#              #
-#    Updated: 2026/03/16 22:35:27 by ryatan           ###   ########.fr        #
+#    Updated: 2026/03/17 19:55:48 by ryatan           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 COMPILER = cc
 INCLUDES = -Iincludes -Ilibft -Ift_printf
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g3
 
 OBJ_DIR = obj
 SRC_DIR = src
