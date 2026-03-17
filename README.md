@@ -1,21 +1,23 @@
-*This project has been created as part of the 42 curriculum by ryatan
-
 # PIPEX
+
+> *Created as part of the 42 curriculum by ryatan*
 
 ## Description
 
-This project focuses on handling pipes in the format equivalent to:
+This project replicates the shell pipe behaviour:
+
 ```shell
 < file1 cmd1 | cmd2 > file2
 ```
 
-Where `file1` and `file2` are filenames, and `cmd1` and `cmd2` are shell commands with their parameters.
+Where `file1` and `file2` are filenames, and `cmd1` / `cmd2` are shell commands with their parameters.
 
 ---
 
 ## Allowed Functions
 
 ### File Operations
+
 | Function | Description |
 |----------|-------------|
 | `open()` | Open a file |
@@ -24,18 +26,21 @@ Where `file1` and `file2` are filenames, and `cmd1` and `cmd2` are shell command
 | `write()` | Write to a file descriptor |
 
 ### Memory
+
 | Function | Description |
 |----------|-------------|
 | `malloc()` | Allocate memory |
 | `free()` | Free allocated memory |
 
 ### Error Handling
+
 | Function | Description |
 |----------|-------------|
 | `perror()` | Prints a human-readable error message based on the current `errno`. Called when a syscall like `fork()`, `execve()`, or `pipe()` fails. |
-| `strerror()` | Converts an error number into a human-readable string. Unlike `perror()`, it returns a string rather than printing it — useful for formatting custom error messages (e.g. `errno` → `strerror(errno)` → `"Permission denied"`). |
+| `strerror()` | Converts an error number into a human-readable string. Unlike `perror()`, it returns a string — useful for formatting custom error messages (e.g. `errno` → `strerror(errno)` → `"Permission denied"`). |
 
 ### Process Management
+
 | Function | Description |
 |----------|-------------|
 | `fork()` | Creates a new child process. After `fork()`, two identical processes exist. |
@@ -47,6 +52,7 @@ Where `file1` and `file2` are filenames, and `cmd1` and `cmd2` are shell command
 | `access()` | Checks if a file exists or if the process has permission to use it (e.g. verifying a command exists in `/usr/bin/`). |
 
 ### File Descriptor Manipulation
+
 | Function | Description |
 |----------|-------------|
 | `dup()` | Duplicates a file descriptor. Both fds refer to the same open file. |
@@ -56,22 +62,25 @@ Where `file1` and `file2` are filenames, and `cmd1` and `cmd2` are shell command
 ---
 
 ## Typical Command Execution Flow
+
 ```c
-pipe()
-fork()
+pipe();
+fork();
     // Child process:
-    dup2()    // Redirect I/O
-    execve()  // Run the command
-    exit()    // If exec fails
+    dup2();    // Redirect I/O
+    execve();  // Run the command
+    exit();    // If exec fails
 
     // Parent process:
-    waitpid() // Wait for child to finish
+    waitpid(); // Wait for child to finish
 ```
 
 ---
+
 ## Useful Shell Commands for Testing
 
 ### Simple Input/Output
+
 | Command | Description |
 |---------|-------------|
 | `cat` | Reads and prints file contents |
@@ -80,6 +89,7 @@ fork()
 | `wc -l` / `wc -w` | Counts lines / words |
 
 ### Filtering & Searching
+
 | Command | Description |
 |---------|-------------|
 | `grep "pattern"` | Filters lines matching a pattern |
@@ -89,12 +99,14 @@ fork()
 | `uniq` | Removes duplicate lines |
 
 ### Transformation
+
 | Command | Description |
 |---------|-------------|
 | `tr 'a-z' 'A-Z'` | Transforms characters (e.g. lowercase to uppercase) |
 | `cut -d',' -f1` | Cuts a column from delimited text |
 | `rev` | Reverses each line |
 
+### Example Pipex Commands
 
 ```shell
 < file1 grep "hello" | wc -l > file2
@@ -103,91 +115,111 @@ fork()
 < file1 head -n 10 | tr 'a-z' 'A-Z' > file2
 ```
 
-default behavior: cmd1 -> write to its stdout
-pipe: point cmd1's stdout to the write end of pipe
-default behaviour: cmd2 expects input into its stdin
-pipe: point the read end of pipe into cmd2's stdin
-cmd 1 -> pipe -> cmd2
+### How the Pipe Works
 
-## Design of the program
+```
+cmd1 → write end of pipe → read end of pipe → cmd2
+```
+
+- **Default behaviour:** `cmd1` writes to its stdout; `cmd2` reads from its stdin.
+- **With pipe:** `cmd1`'s stdout is redirected to the write end; the read end is redirected into `cmd2`'s stdin.
+
+---
+
+## Program Design
 
 ### Enums
+
 ```c
 enum e_error
 {
-	ERR_NONE,
-	ERR_INVALID_INPUT,
+    ERR_NONE,
+    ERR_INVALID_INPUT,
 };
 ```
-### Structures
+
+### Structs
+
 ```c
 typedef struct s_commandpaths
 {
-	char	*cmd1_path;
-	char	*cmd2_path;
-	char	**cmd1;
-	char	**cmd2;
-	int		fd_in;
-	int		fd_out;
-}	t_commandpaths;
+    char    *cmd1_path;
+    char    *cmd2_path;
+    char    **cmd1;
+    char    **cmd2;
+    int     fd_in;
+    int     fd_out;
+}   t_commandpaths;
 ```
+
 ```c
 typedef struct s_filefds
 {
-	int	fd_in;
-	int	fd_out;
-}	t_filefds;
+    int fd_in;
+    int fd_out;
+}   t_filefds;
 ```
-### Created functions
-#### Error handling
-```c
-void			print_error(int err_code);
-```
-#### Struct inits
-```c
-int				init_cp_struct(t_commandpaths **cp_struct);
-```
-```c
-int				init_filefds(t_filefds **file_fds);
-```
-#### File operations
-```c
-t_filefds		*open_create_files(char **argv);
-```
-#### Get functions
-```c
-char			*get_path(char **envp);
-```
-```c
-char			*get_command_path(char *full_path, char *command);
-```
-```c
-t_commandpaths	*get_cp_struct(char **argv, char *full_path, t_filefds *fds);
-```
-#### Pipex main logic
-```c
-void			fork_process(t_commandpaths *cp_struct, char **envp,
-					int *pipefd, int cmd);
-```
-#### Memory management
-```c
-int				free_all(char **item);
-```
-```c
-int				free_struct(t_commandpaths *cp_struct);
-```
-## Instructions
 
+### Functions
+
+#### Error Handling
 ```c
+void            print_error(int err_code);
+```
+
+#### Struct Initialisation
+```c
+int             init_cp_struct(t_commandpaths **cp_struct);
+int             init_filefds(t_filefds **file_fds);
+```
+
+#### File Operations
+```c
+t_filefds       *open_create_files(char **argv);
+```
+
+#### Getters
+```c
+char            *get_path(char **envp);
+char            *get_command_path(char *full_path, char *command);
+t_commandpaths  *get_cp_struct(char **argv, char *full_path, t_filefds *fds);
+```
+
+#### Pipex Core Logic
+```c
+void            fork_process(t_commandpaths *cp_struct, char **envp, int *pipefd, int cmd);
+```
+
+#### Memory Management
+```c
+int             free_all(char **item);
+int             free_struct(t_commandpaths *cp_struct);
+```
+
+---
+
+## Usage
+
+Build the project:
+
+```shell
 make
 ```
-```bash
+
+Run (equivalent shell form on the left):
+
+```shell
+# Shell equivalent
 < input_file cmd1 | cmd2 > output_file
-```
-```c
+
+# Pipex usage
 ./pipex input_file cmd1 cmd2 output_file
 ```
+
+---
+
 ## Resources
-Fork() system call tutorial: https://www.youtube.com/watch?v=xVSPv-9x3gk
-Pipe() tutorial for linux: https://www.youtube.com/watch?v=uHH7nHkgZ4w
-fd, dup()/dup2() system call tutorial: https://www.youtube.com/watch?v=EqndHT606Tw
+
+- [fork() system call tutorial](https://www.youtube.com/watch?v=xVSPv-9x3gk)
+- [pipe() tutorial for Linux](https://www.youtube.com/watch?v=uHH7nHkgZ4w)
+- [fd, dup() / dup2() system call tutorial](https://www.youtube.com/watch?v=EqndHT606Tw)
