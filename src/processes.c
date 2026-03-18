@@ -6,7 +6,7 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 13:22:08 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/17 20:47:56 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/03/18 13:16:50 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char	*get_command_path(char *full_path, char *command)
 		i++;
 	}
 	print_error(0);
-	free(split_paths);
+	free_all(split_paths);
 	return (NULL);
 }
 
@@ -89,15 +89,14 @@ t_commandpaths	*get_cp_struct(char **argv, char *full_path, t_filefds *fds)
 	return (cp_struct);
 }
 
-void	fork_process(t_commandpaths *cp_struct, char **envp, int *pipefd,
-		int cmd)
+pid_t	fork_process_cmd1(t_commandpaths *cp_struct, char **envp, int *pipefd)
 {
 	pid_t	pid;
 
 	if (!cp_struct || !envp || !pipefd)
-		return ;
+		return (-1);
 	pid = fork();
-	if (pid == 0 && cmd == 1)
+	if (pid == 0)
 	{
 		dup2(cp_struct->fd_in, 0);
 		dup2(pipefd[1], 1);
@@ -105,8 +104,20 @@ void	fork_process(t_commandpaths *cp_struct, char **envp, int *pipefd,
 		close(pipefd[0]);
 		close(pipefd[1]);
 		execve(cp_struct->cmd1_path, cp_struct->cmd1, envp);
+		perror("execve");
+		exit(EXIT_FAILURE);
 	}
-	else if (pid == 0 && cmd == 2)
+	return (pid);
+}
+
+pid_t	fork_process_cmd2(t_commandpaths *cp_struct, char **envp, int *pipefd)
+{
+	pid_t	pid;
+
+	if (!cp_struct || !envp || !pipefd)
+		return (-1);
+	pid = fork();
+	if (pid == 0)
 	{
 		dup2(pipefd[0], 0);
 		dup2(cp_struct->fd_out, 1);
@@ -114,33 +125,8 @@ void	fork_process(t_commandpaths *cp_struct, char **envp, int *pipefd,
 		close(pipefd[1]);
 		close(pipefd[0]);
 		execve(cp_struct->cmd2_path, cp_struct->cmd2, envp);
-	}
-}
-
-t_filefds	*open_create_files(char **argv)
-{
-	t_filefds	*file_fds;
-
-	if (!argv)
-		return (NULL);
-	file_fds = malloc(sizeof(t_filefds));
-	if (!file_fds)
-		return (NULL);
-	init_filefds(&file_fds);
-	file_fds->fd_in = open(argv[1], O_RDONLY);
-	if (file_fds->fd_in < 0)
-	{
-		perror(argv[1]);
-		free(file_fds);
+		perror("execve");
 		exit(EXIT_FAILURE);
 	}
-	file_fds->fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (file_fds->fd_out < 0)
-	{
-		perror(argv[4]);
-		close(file_fds->fd_in);
-		free(file_fds);
-		exit(EXIT_FAILURE);
-	}
-	return (file_fds);
+	return (pid);
 }

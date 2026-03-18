@@ -6,7 +6,7 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 22:29:54 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/17 20:19:34 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/03/18 11:50:10 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,32 @@ int	free_struct(t_commandpaths *cp_struct)
 	free_all(cp_struct->cmd2);
 	free(cp_struct);
 	return (0);
+}
+
+t_filefds	*open_create_files(char **argv)
+{
+	t_filefds	*file_fds;
+
+	if (!argv)
+		return (NULL);
+	file_fds = malloc(sizeof(t_filefds));
+	if (!file_fds)
+		return (NULL);
+	init_filefds(&file_fds);
+	file_fds->fd_in = open(argv[1], O_RDONLY);
+	if (file_fds->fd_in < 0)
+	{
+		perror(argv[1]);
+		free(file_fds);
+		exit(EXIT_FAILURE);
+	}
+	file_fds->fd_out = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (file_fds->fd_out < 0)
+	{
+		perror(argv[4]);
+		close(file_fds->fd_in);
+		free(file_fds);
+		exit(EXIT_FAILURE);
+	}
+	return (file_fds);
 }
