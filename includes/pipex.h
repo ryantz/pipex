@@ -6,7 +6,7 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 12:53:14 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/18 11:55:40 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/05/07 09:36:14 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 
 enum e_error
 {
-	ERR_NONE,
+	ERR_NO_FILE,
 	ERR_INVALID_INPUT,
 };
 

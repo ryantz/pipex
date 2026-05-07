@@ -6,7 +6,7 @@
 /*   By: ryatan <ryatan@student.42singapore.sg>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 13:22:08 by ryatan            #+#    #+#             */
-/*   Updated: 2026/03/18 13:16:50 by ryatan           ###   ########.fr       */
+/*   Updated: 2026/05/07 09:40:18 by ryatan           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ char	*get_path(char **envp)
 			return (envp[i] + 5);
 		i++;
 	}
-	print_error(0);
+	print_error(ERR_NO_FILE);
 	return (NULL);
 }
 
@@ -56,7 +56,7 @@ char	*get_command_path(char *full_path, char *command)
 		free(path_join_command);
 		i++;
 	}
-	print_error(0);
+	print_error(ERR_NO_FILE);
 	free_all(split_paths);
 	return (NULL);
 }
@@ -104,7 +104,7 @@ pid_t	fork_process_cmd1(t_commandpaths *cp_struct, char **envp, int *pipefd)
 		close(pipefd[0]);
 		close(pipefd[1]);
 		execve(cp_struct->cmd1_path, cp_struct->cmd1, envp);
-		perror("execve");
+		perror(cp_struct->cmd1[0]);
 		exit(EXIT_FAILURE);
 	}
 	return (pid);
@@ -125,7 +125,7 @@ pid_t	fork_process_cmd2(t_commandpaths *cp_struct, char **envp, int *pipefd)
 		close(pipefd[1]);
 		close(pipefd[0]);
 		execve(cp_struct->cmd2_path, cp_struct->cmd2, envp);
-		perror("execve");
+		perror(cp_struct->cmd2[0]);
 		exit(EXIT_FAILURE);
 	}
 	return (pid);
